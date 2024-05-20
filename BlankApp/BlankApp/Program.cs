@@ -28,6 +28,10 @@ app.MapPost("/createuser", (User user, UserDbContext context) =>
 {
     try
     {
+        if (user.LastName == null || user.LastName == "")
+        {
+            throw new Exception("Last name is required");
+        }
         context.Users.Add(user);
     }
     catch (Exception)
