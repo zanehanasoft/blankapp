@@ -6,6 +6,8 @@ var builder = WebApplication.CreateBuilder(args);
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+var connectionString = "Server=localhost; Port=33060; uid=admin; pwd=password123; database=Users;";
+builder.Services.AddDbContext<UserDbContext>(options => options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString)));
 
 var app = builder.Build();
 
@@ -24,7 +26,15 @@ app.MapGet("/getuserslastnamelist", (UserDbContext context) =>
 
 app.MapPost("/createuser", (User user, UserDbContext context) =>
 {
-    context.Users.Add(user);
+    try
+    {
+        context.Users.Add(user);
+    }
+    catch (Exception)
+    {
+        return Results.BadRequest();
+    }
+    return Results.Ok();
 });
 
 app.UseHttpsRedirection();
